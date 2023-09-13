@@ -1,34 +1,16 @@
-name: Legg alle nye saker til 'Optimizely' prosjekt
+name: Add new issues to Optimizely project
+
 on:
   issues:
     types:
       - opened
 
-env:
-  repository_owner: $GITHUB_REPOSITORY_OWNER
-  repository_name: ${{ github.event.repository.name }}
-  #***** Variabler for Testdepartementet og TEST (kommenteres ut for PROD) *****
-  # project_id_servicedesk: 1
-  #***** Variabler for Altinn og PROD (kommenteres ut for TEST) *****
-  project_id_servicedesk: 60
-  project_id_optimizely: 57
-
 jobs:
-  add-to-project-optimizely:
-    name: Add issue to 'Optimizely' project
-    runs-on: altinn-support-runner
+  add-to-project:
+    name: Add issue to Optimizely project
+    runs-on: ubuntu-latest
     steps:
-      - name: Move new issue to 'Todo' column in Optimizely project
-        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
+      - uses: actions/add-to-project@main
         with:
-          gh_token: ${{ secrets.ASSIGN_PROJECT_TOKEN }}
-          # user: sample-user
-          organization: ${{ env.repository_owner }}
-          project_id: ${{ env.project_id_optimizely }}
-          resource_node_id: ${{ github.event.issue.node_id }}
-          status_value: '🆕 New' # Target status
-      - name: initial labeling
-        uses: andymckay/labeler@master
-        with:
-          add-labels: "altinn/optimizely"
-          #remove-labels: "team/servicedesk"
+          project-url: https://github.com/orgs/Altinn/projects/57
+          github-token: ${{ secrets.ASSIGN_PROJECT_TOKEN }}
