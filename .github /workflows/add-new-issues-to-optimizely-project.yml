@@ -1,0 +1,37 @@
+name: Legg alle nye saker til 'Optimizely' prosjekt
+on:
+  issues:
+    types:
+      - opened
+
+env:
+  # ADD_TO_PROJECT_PAT finnes i både TEST og PROD
+  #GH_TOKEN: ${{ secrets.ADD_TO_PROJECT_PAT }}
+  repository_owner: $GITHUB_REPOSITORY_OWNER
+  repository_name: ${{ github.event.repository.name }}
+  #***** Variabler for Testdepartementet og TEST (kommenteres ut for PROD) *****
+  # project_id_servicedesk: 1
+  #***** Variabler for Altinn og PROD (kommenteres ut for TEST) *****
+  project_id_servicedesk: 60
+  project_id_optimizely: 57
+
+jobs:
+  add-to-project-optimizely:
+    name: Add issue to 'Servicedesk' project if not an Incident
+    if: ${{ (!contains( github.event.issue.labels.*.name, 'Incident-Report')) }}
+    runs-on: altinn-support-runner
+    steps:
+      - name: Move new issue to 'Todo' column in Optimizely project
+        uses: leonsteinhaeuser/project-beta-automations@v2.1.0
+        with:
+          gh_token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          # user: sample-user
+          organization: ${{ env.repository_owner }}
+          project_id: ${{ env.project_id_optimizely }}
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: '🆕 New' # Target status
+      - name: initial labeling
+        uses: andymckay/labeler@master
+        with:
+          #add-labels: "pending-review, team/servicedesk"
+          #remove-labels: "team/servicedesk"
